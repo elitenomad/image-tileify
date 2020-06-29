@@ -7,7 +7,7 @@ TODO: Delete this and the text above, and describe your gem
 ## Pre requisites and notes
 
 - Install imagemagick. use brew install imagemgick
-  - Note: i had high sierra in my imac and latest version didnt work. so had to install imagemagick@6 version.
+  - Note: i had high sierra in my imac and latest version didn't work. so had to install imagemagick@6 version.
   - Reference: https://blog.francium.tech/installing-rmagick-on-osx-high-sierra-7ea71f57390d
 
 ## Installation
