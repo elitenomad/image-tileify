@@ -77,6 +77,20 @@ Generate tiles for a given image for zoom levels 2. From the gem directory, run 
 bin/tileify -i /Users/pranava/Downloads/713669080a3eff059c320c925250f6f1.jpg -z 2
 ```
 
+## Test an image with custom width and height
+
+Added a pokemon image of 2800 x 1800 size. It has 28 columns and 18 Rows. If we have to tile individual pokemon from large image
+
+```
+  rows =  2800/28 (100)
+  columns = 1800/18 (100)
+
+  So tile size should be 100 x 100. Ran the below command which generates tiles of indivudal pokemons from large image.
+
+  bin/tileify -i images/sugimori.png -w 100 -l 100
+
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

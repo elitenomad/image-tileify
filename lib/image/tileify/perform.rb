@@ -18,7 +18,7 @@ module Image
 
             # correct zoom levels input
             def zoom_levels_correction!
-                zoom_levels =  options.auto_zoom_levels
+                zoom_levels = options.auto_zoom_levels
 
                 # If provided value is > 10 
                 if zoom_levels && zoom_levels > 10
@@ -33,9 +33,8 @@ module Image
             def tasks
                 t = []
                 if options.auto_zoom_levels.nil?
-                    # if we have no auto zoom request, then
-                    # we dont shrink or scale, and save directly to the output
-                    # dir.
+                    # if we have no auto zoom request, then dont scale
+                    # save it directly to the output directory (default ./tiles)
                     t << {
                       output_dir: options.output_dir,
                       scale: 1.0 # dont scale
@@ -46,10 +45,10 @@ module Image
                     scale = 1.0
                     t << {
                       output_dir: File.join(options.output_dir, previous_zoom_level.to_s),
-                      scale: scale
+                      scale: scale,
                     }
 
-                    (options.auto_zoom_levels-1).times do |level|
+                    (options.auto_zoom_levels).times do |level|
                       scale = scale / 2.0
                       previous_zoom_level = previous_zoom_level - 1
                       t << {
@@ -65,8 +64,7 @@ module Image
             def run!
                 tasks.each do |task|
                     image = @image
-                    image_path = File.join(task[:output_dir], @options.prefix)
-
+                    
                     # if scale required, scale image (rMagick scale utility)
                     if task[:scale] != 1.0
                       begin
@@ -81,7 +79,7 @@ module Image
                     create_path(task[:output_dir])
 
                     # Generate tiles
-                    self.generate_tiles(image, image_path, @options.width, @options.height)
+                    self.generate_tiles(image, task[:output_dir], @options.width, @options.height)
                     image = nil
                 end    
             end
@@ -90,17 +88,17 @@ module Image
                 FileUtils.mkdir_p directory_path
             end
 
+            # Use image width and height
+            # then find out how many tiles we'll get out of
+            # the image, then use that for the xy offset in crop.
             def calculate_rows_columns(image, tile_width, tile_height)
                 [
-                    (image.columns/tile_width.to_f).ceil,
-                    (image.rows/tile_height.to_f).ceil
+                    (image.rows/tile_height.to_f).ceil,
+                    (image.columns/tile_width.to_f).ceil
                 ]
             end
 
             def generate_tiles(image, filename_prefix, tile_width, tile_height)
-                # find image width and height
-                # then find out how many tiles we'll get out of
-                # the image, then use that for the xy offset in crop.
                 rows, columns = calculate_rows_columns(image, tile_width, tile_height)
                 x,y,column,row = 0,0,0,0
                 crops = []
@@ -131,7 +129,7 @@ module Image
                   cropped_image = image.crop(c[:x], c[:y], tile_width, tile_height, true)
           
                   # write the file cropped to the directory created
-                  cropped_image.write("#{filename_prefix}_#{c[:column]}_#{c[:row]}.#{extension}")
+                  cropped_image.write("#{filename_prefix}/#{c[:x]}_#{c[:y]}.#{extension}")
           
                   # remove the reference to the image
                   cropped_image = nil
