@@ -7,11 +7,9 @@ module Image
     class Parser
       class Error < StandardError; end   
       #
-      # Return a structure describing the options.
+      # Return a structure describing the command line options.
       #
       def self.parse(args = {})
-        # The options specified on the command line will be collected in *options*.
-        # We set default values here.
         options = OpenStruct.new
         options.width = Image::Tileify::Constants::TILE_WIDTH
         options.height = Image::Tileify::Constants::TILE_HEIGHT
@@ -64,10 +62,6 @@ module Image
 
             # Fetch the version from Image::Tileify::VERSION file from the gem and exit
             opts.on('-vv', '--version', "Version information (v#{Image::Tileify::VERSION})") { puts Image::Tileify::VERSION; exit }
-
-            # opts.on('--dont-extend-incomplete-tiles',
-            #      "Do not extend edge tiles if they do not fill an entire tile_width x tile_height. " +
-            #      "By default tileup will extend tiles to tile_width x tile_height if required.") {|e|options[:extend_incomplete_tiles] = false}
         end
 
         begin
