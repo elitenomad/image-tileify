@@ -5,7 +5,8 @@ require 'pp'
 module Image
   module Tileify
     class Parser
-      class Error < StandardError; end   
+      class Error < StandardError; end
+
       #
       # Return a structure describing the command line options.
       #
@@ -13,12 +14,9 @@ module Image
         options = OpenStruct.new
         options.width = Image::Tileify::Constants::TILE_WIDTH
         options.height = Image::Tileify::Constants::TILE_HEIGHT
-        options.prefix = Image::Tileify::Constants::TILE_PREFIX
         options.output_dir = Image::Tileify::Constants::OUTPUT_DIR
         options.auto_zoom_levels = nil
         options.input_filename = nil
-        options.verbose = false
-
       
         opt_parser = OptionParser.new do |opts|
             opts.banner = "Usage: Image tileify utility"
@@ -27,11 +25,6 @@ module Image
             
             opts.on("-i=filename", "--input=filename", "Mandatory input file.") do |input|
               options[:input_filename] = input
-            end
-
-          
-            opts.on("-p=prefix", "--prefix=prefix", "Prefix to add to generated output files.") do |prefix|
-              options[:prefix] = prefix
             end
 
             opts.on("-w=width", "--width=width", Integer, "Width of the tile to be generated. default: 256") do |width|
@@ -50,10 +43,6 @@ module Image
               options[:output_dir] = output 
             end
 
-            opts.on('-v', '--verbose', "Enable verbose logging.") do |verbose|
-              options[:verbose] = true 
-            end
-
             opts.separator ""
             opts.separator "Common options:"
 
@@ -61,18 +50,18 @@ module Image
             opts.on('-h', '--help', "You're looking at it.") { puts opts; exit }
 
             # Fetch the version from Image::Tileify::VERSION file from the gem and exit
-            opts.on('-vv', '--version', "Version information (v#{Image::Tileify::VERSION})") { puts Image::Tileify::VERSION; exit }
+            opts.on('-v', '--version', "Version information (v#{Image::Tileify::VERSION})") { puts Image::Tileify::VERSION; exit }
         end
 
         begin
-          opt_parser.parse!(args)
-        rescue SystemExit => e
-          exit
-        rescue Exception => e
-          #TODO: Raise error here
+          opt_parser.parse!
+
+          if options[:input_filename].nil?
+            puts "Input file must be provided. Try running 'tileify -h'"
+          end
+        rescue Error => e
           puts e.class
-          puts "Argument error, #{e.message}. Try running '#{File.basename($PROGRAM_NAME)} -h'"
-          exit
+          puts "#{e.message}. Try running '#{File.basename($PROGRAM_NAME)} -h'"
         end  
     
         options

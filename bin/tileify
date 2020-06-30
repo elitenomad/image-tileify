@@ -3,16 +3,11 @@
 require "bundler/setup"
 require "image/tileify"
 
-result = Image::Tileify::Parser.parse(ARGV)
-
-if result[:input_filename].nil?
-  puts "No input file specified, Try running '#{File.basename($PROGRAM_NAME)} -h'"
-  exit 1
-end
-
 begin
-  Image::Tileify::Perform.new(result)
+  result = Image::Tileify::Parser.parse(ARGV)
+  Image::Tileify::Perform.new(result).run!
 rescue Interrupt
   puts "\n\nInterrupt received, exiting.\n"
+  puts "Try running '#{File.basename($PROGRAM_NAME)} -h' for more options"
   exit
 end

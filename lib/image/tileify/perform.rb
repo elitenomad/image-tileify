@@ -1,10 +1,12 @@
 require 'RMagick'
 require 'fileutils'
-require 'logger'
+require 'ostruct'
 
 module Image
     module Tileify
         class Perform
+            class FileNotReadableError < StandardError; end
+            class ImageNotScalableError < StandardError; end
             attr_accessor :image, :options, :extension
 
             # Read the image file.
@@ -12,7 +14,7 @@ module Image
                 begin
                     Magick::Image::read(file).first
                 rescue Magick::ImageMagickError => e
-                    exit
+                    raise FileNotReadableError.new('Issue in reading file')
                 end
             end
 
@@ -70,8 +72,7 @@ module Image
                       begin
                         image = @image.scale(task[:scale])
                       rescue RuntimeError => e
-                        message = "Failed to scale image"
-                        exit
+                        raise ImageNotScalableError.new('Failed to scale image')
                       end
                     end
 
@@ -81,7 +82,9 @@ module Image
                     # Generate tiles
                     self.generate_tiles(image, task[:output_dir], @options.width, @options.height)
                     image = nil
-                end    
+                end
+                
+                true
             end
 
             def create_path(directory_path)
@@ -98,11 +101,11 @@ module Image
                 ]
             end
 
-            def generate_tiles(image, filename_prefix, tile_width, tile_height)
-                rows, columns = calculate_rows_columns(image, tile_width, tile_height)
-                x,y,column,row = 0,0,0,0
-                crops = []
-          
+            # crops array
+            # contains x, y coordinates.
+            def crops_x_y(rows, columns, tile_width, tile_height)
+              crops = []
+              x,y,column,row = 0,0,0,0
                 while true
                   x = column * tile_width
                   y = row * tile_height
@@ -123,6 +126,14 @@ module Image
                     break
                   end
                 end
+
+                crops
+            end
+
+            def generate_tiles(image, filename_prefix, tile_width, tile_height)
+                rows, columns = calculate_rows_columns(image, tile_width, tile_height)
+
+                crops = crops_x_y(rows, columns, tile_width, tile_height)
           
                 crops.each do |c|
                   # crop the image with given x, y , w and h
@@ -137,14 +148,12 @@ module Image
               end
 
             def initialize(options)
-              @options = options
-              @image = read_image(options.input_filename)
-              @extension = options.input_filename.split(".").last
+              @options = OpenStruct.new(options)
+              @image = read_image(options[:input_filename])
+              @extension = options[:input_filename].split(".").last
 
               # out of bounds zoom levels will be corrected
               zoom_levels_correction! 
-
-              run!
             end
           end
     end
