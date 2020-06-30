@@ -1,8 +1,28 @@
 # Image::Tileify
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/image/tileify`. To experiment with that code, run `bin/console` for an interactive prompt.
+Welcome to your friendly neighbourhood new image-tileify gem! :) 
 
-TODO: Delete this and the text above, and describe your gem
+# Directory structure
+
+```
+
+  |-> bin
+      |-> console 
+      |-> setup
+      |-> tilefy (binary which generates tiles)
+
+  |-> lib
+      |-> tileify.rb (Gateway to the core functionality of the gem)
+      |-> tileify
+          |-> version.rb (Gem versioning file)
+          |-> constants.rb (Constants used in the gem)
+          |-> parser.rb (bin/tileify argument parsers)
+          |-> perform.rb ( Main file which crops and writes the files)
+  |-> tiles
+      |-> Output directory where all the tiles will be placed based on zoom level
+
+```
+
 
 ## Pre requisites and notes
 
@@ -28,7 +48,34 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+
+Utility helper
+
+$ bin/tileify -h
+Usage: Image tileify utility
+
+Specific options:
+    -i, --input=filename             Mandatory input file.
+    -p, --prefix=prefix              Prefix to add to generated output files.
+    -w, --width=width                Width of the tile to be generated. default: 256
+    -l, --height=height              Height of the tile to be generated. default: 256
+    -z, --zoom-level=zoom_level      scale input image N times, must be a number
+    -o, --output=ouput               Output directory (will be created if it doesn't exist).
+        --verbose                    Enable verbose logging.
+
+Common options:
+    -h, --help                       You're looking at it.
+    -v, --versionv                   Version information (v0.1.0)
+
+
+```
+
+Generate tiles for a given image for zoom levels 2. From the gem directory, run the below command.
+
+```
+bin/tileify -i /Users/pranava/Downloads/713669080a3eff059c320c925250f6f1.jpg -z 2
+```
 
 ## Development
 
