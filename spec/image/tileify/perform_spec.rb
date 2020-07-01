@@ -61,7 +61,7 @@ module Image
                                 input_filename: 'spec/image/tileify/test.jpg',
                                 output_dir: './tiles'
                             }).tasks.length
-                        ).to eq(4)
+                        ).to eq(3)
                     end
                 end
             end
@@ -113,20 +113,42 @@ module Image
                         subject.new({
                             width: 256,
                             height: 256,
-                            auto_zoom_levels: 40,
+                            auto_zoom_levels: nil,
                             input_filename: 'spec/image/tileify/test.jpg',
-                            output_dir: './tiles'
+                            output_dir: './test_tiles'
                         }).run!
                     }
 
-                    it "is expected to return combination of cropped values to be stored" do
+                    it "is expected to return true when no errors" do
                         expect(
                             result
                         ).to be_truthy
                     end
+
+                    context "test_tiles" do
+                        subject { "./test_tiles" }
+                        it { is_expected.to  be_a_directory }
+
+                        describe 'generated tiles' do
+                            it 'is expected to have 0_0.jpg generated' do
+                                expect("#{subject}/0_0.jpg").to exists
+                            end
+
+                            it 'is expected to have 0_256.jpg generated' do
+                                expect("#{subject}/0_256.jpg").to exists
+                            end
+
+                            it 'is expected to have 768_0.jpg generated' do
+                                expect("#{subject}/768_0.jpg").to exists
+                            end
+
+                            it 'is expected to have 768_512.jpg generated' do
+                                expect("#{subject}/768_512.jpg").to exists
+                            end
+                        end
+                    end
                 end
             end
-        
         end
     end
   end

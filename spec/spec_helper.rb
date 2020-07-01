@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "image/tileify"
+require 'fileutils'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -10,5 +11,23 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.after(:suite) do
+    FileUtils.rm_rf('./test_tiles')
+  end
+end
+
+# custom rspec matcher to check if provided path is a directory
+RSpec::Matchers.define :be_a_directory do
+  match do |dir_path|
+    Dir.exist?(dir_path)
+  end
+end
+
+# custom rspec matcher for file existence
+RSpec::Matchers.define :exists do
+  match do |file_path|
+    File.exist?(file_path)
   end
 end

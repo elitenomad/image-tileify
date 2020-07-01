@@ -75,11 +75,12 @@ Generate tiles for a given image for zoom levels 2. From the gem directory, run 
 
 ```
 bin/tileify -i /Users/pranava/Downloads/713669080a3eff059c320c925250f6f1.jpg -z 2
+
 ```
 
 ## Test an image with custom width and height
 
-Added a pokemon image of 2800 x 1800 size. It has 28 columns and 18 Rows. If we have to tile individual pokemon from large image
+Added a pokemon image of 2800 x 1800 size (images/sugimori.png). It has 28 columns and 18 Rows. If we have to tile individual pokemon from large image
 
 ```
   rows =  2800/28 (100)
@@ -90,6 +91,13 @@ Added a pokemon image of 2800 x 1800 size. It has 28 columns and 18 Rows. If we 
   bin/tileify -i images/sugimori.png -w 100 -l 100
 
 ```
+
+## Technical decsions
+
+- Initial thought process was to create a ruby binary which transforms the images. But chose to create a gem is to ensure we reuse the core functionality (transform image to tiles by width and height) else where just by including the gem.
+- One of the things the program cannot handle is incomplete tiles. 
+- In the program Scale value for a given zoom level is not calculated mathematically. For e.g in this program if zoom level given is 4 ({z=4, scale= 1}, { z = 3, scale = 1/2}, ...)
+
 
 ## Development
 

@@ -50,7 +50,11 @@ module Image
                       scale: scale,
                     }
 
-                    (options.auto_zoom_levels).times do |level|
+                    # As per the requirement By convention the levels start at 0 and go "down" to level L-1
+                    (options.auto_zoom_levels - 1).times do |level|
+                      # Unable to understand how to calculate accurate scaling for a given zoom level
+                      # https://docs.microsoft.com/en-us/bingmaps/articles/understanding-scale-and-resolution depicts a formula
+                      # Just went with half of previous scaling for every zoom level.
                       scale = scale / 2.0
                       previous_zoom_level = previous_zoom_level - 1
                       t << {
@@ -77,7 +81,7 @@ module Image
                     end
 
                     # create output dir
-                    create_path(task[:output_dir])
+                    FileUtils.mkdir_p task[:output_dir]
 
                     # Generate tiles
                     self.generate_tiles(image, task[:output_dir], @options.width, @options.height)
@@ -85,10 +89,6 @@ module Image
                 end
                 
                 true
-            end
-
-            def create_path(directory_path)
-                FileUtils.mkdir_p directory_path
             end
 
             # Use image width and height
@@ -104,8 +104,8 @@ module Image
             # crops array
             # contains x, y coordinates.
             def crops_x_y(rows, columns, tile_width, tile_height)
-              crops = []
-              x,y,column,row = 0,0,0,0
+                crops = []
+                x,y,column,row = 0,0,0,0
                 while true
                   x = column * tile_width
                   y = row * tile_height
@@ -130,7 +130,7 @@ module Image
                 crops
             end
 
-            def generate_tiles(image, filename_prefix, tile_width, tile_height)
+            def generate_tiles(image, output_path, tile_width, tile_height)
                 rows, columns = calculate_rows_columns(image, tile_width, tile_height)
 
                 crops = crops_x_y(rows, columns, tile_width, tile_height)
@@ -140,7 +140,7 @@ module Image
                   cropped_image = image.crop(c[:x], c[:y], tile_width, tile_height, true)
           
                   # write the file cropped to the directory created
-                  cropped_image.write("#{filename_prefix}/#{c[:x]}_#{c[:y]}.#{extension}")
+                  cropped_image.write("#{output_path}/#{c[:x]}_#{c[:y]}.#{extension}")
           
                   # remove the reference to the image
                   cropped_image = nil
