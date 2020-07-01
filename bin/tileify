@@ -5,9 +5,15 @@ require "image/tileify"
 
 begin
   result = Image::Tileify::Parser.parse(ARGV)
-  Image::Tileify::Perform.new(result).run!
+
+  if(result[:input_filename])
+    Image::Tileify::Perform.new(result).run!
+  end
 rescue Interrupt
   puts "\n\nInterrupt received, exiting.\n"
+  puts "Try running '#{File.basename($PROGRAM_NAME)} -h' for more options"
+  exit
+rescue StandardError
   puts "Try running '#{File.basename($PROGRAM_NAME)} -h' for more options"
   exit
 end
