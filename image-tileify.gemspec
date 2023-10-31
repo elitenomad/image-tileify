@@ -28,5 +28,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Add dependenciees
-  spec.add_dependency 'rmagick', '~> 4.1.2'
+  spec.add_dependency 'rmagick', '>= 4.1.2', '< 5.4.0'
 end
